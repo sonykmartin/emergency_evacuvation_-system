@@ -1,0 +1,11 @@
+.path {
+  position: absolute;
+  display: flex;
+  flex-direction: column;
+}
+
+.path-arrow {
+  position: absolute;
+  font-size: 20px;
+  color: green;
+}

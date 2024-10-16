@@ -1,0 +1,74 @@
+.building {
+  width: 100%;
+  height: 100vh; /* Full height of the viewport */
+  position: relative; /* Allows positioning of child elements */
+  border: 2px solid #000; /* Border for the building */
+  display: flex; /* Enable flexbox */
+  justify-content: center; /* Center child elements horizontally */
+  align-items: center; /* Center child elements vertically */
+}
+
+.building-area {
+  width: 50%; /* Adjusted width of the building area */
+  height: 70%; /* Reduced height of the building area */
+  display: flex; /* Enable flexbox */
+  flex-direction: column; /* Arrange children in a column */
+  justify-content: center; /* Center rooms vertically */
+  align-items: center; /* Center rooms horizontally */
+  position: relative; /* Allows positioning of rooms and exits */
+  margin: auto; /* Center the building area */
+  background-color: #f0f0f0; /* Light gray background */
+  border: 2px solid #000; /* Border for the building area */
+}
+
+
+.room {
+  width: 40%; /* Adjusted width of the room */
+  height: 20%; /* Height of the room */
+  margin: 5%; /* Add margin for spacing */
+  background-color: #b0e0e6; /* Light blue color */
+  border: 2px solid #000; /* Border for the room */
+  display: flex; /* Flexbox for center alignment */
+  justify-content: center; /* Center horizontally */
+  align-items: center; /* Center vertically */
+  font-weight: bold;
+  font-size: 1.5rem; /* Increase font size */
+  box-sizing: border-box; /* Include padding and border in width/height */
+}
+
+.exit {
+  width: 10%; /* Width of the exit */
+  height: 10%; /* Height of the exit */
+  background-color: #ffcccb; /* Light red color */
+  border: 2px solid #000; /* Border for the exit */
+  position: absolute; /* Absolute positioning */
+  display: flex; /* Flexbox for center alignment */
+  justify-content: center; /* Center horizontally */
+  align-items: center; /* Center vertically */
+  font-weight: bold;
+  font-size: 1.5rem; /* Increase font size */
+}
+
+/* Specific classes for each exit */
+.exit-e1 {
+  top: 5%; /* Top-left corner */
+  left: 1%;
+}
+
+.exit-e2 {
+  top: 5%; /* Top-right corner */
+  right: 3%;
+}
+
+.exit-e3 {
+  bottom: 5%; /* Bottom-right corner */
+  right: 5%;
+}
+
+.path {
+  position: absolute; /* Absolute positioning */
+  border: 1px dotted black; /* Dotted line for the path */
+  border-radius: 5px; /* Rounded corners */
+  z-index: -1; /* Send path behind rooms */
+}
+

@@ -1,0 +1,9 @@
+.cabin {
+  width: 50px; /* Width of each cabin */
+  height: 50px; /* Height of each cabin */
+  border: 1px solid #ccc;
+  background-color: lightgreen; /* Cabin color */
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
