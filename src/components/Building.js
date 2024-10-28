@@ -1,84 +1,87 @@
-import React from 'react';
+// Building.js
+import React, { useEffect, useRef } from 'react';
 import './Building.css';
 
-const Building = () => {
-    // Define positions for rooms and exits
-    const exits = [
-        { position: { top: '0%', left: '0%' }, label: 'E1' },
-        { position: { top: '0%', left: '100%' }, label: 'E2' },
-        { position: { top: '100%', left: '0%' }, label: 'E3' },
-    ];
+function Building() {
+  const canvasRef = useRef(null);
 
-    const rooms = [
-        { position: { top: '20%', left: '10%' }, label: 'Room 1' },
-        { position: { top: '20%', left: '40%' }, label: 'Room 2' },
-        { position: { top: '50%', left: '10%' }, label: 'Room 3' },
-        { position: { top: '50%', left: '40%' }, label: 'Room 4' },
-    ];
+  useEffect(() => {
+    const canvas = canvasRef.current;
+    const ctx = canvas.getContext('2d');
 
-    return (
-        <div className="building">
-            <div className="building-area">
-                {/* Adding exit doors in three corners */}
-                {exits.map((exit, index) => (
-                    <Exit key={index} className={`exit-e${index + 1}`} label={exit.label} position={exit.position} />
-                ))}
+    const wallThickness = 10;
+    const roomLabelFont = 'bold 14px Arial';
+    const doorWidth = 40;
 
-                {/* Positioning rooms */}
-                {rooms.map((room, index) => (
-                    <Room key={index} position={room.position} label={room.label} />
-                ))}
+    function drawRoom(x, y, width, height, label, color = '#34495e') {
+      // Set wall color
+      ctx.fillStyle = color;
 
-                {/* Show paths from each room to each exit */}
-                {rooms.map((room, roomIndex) => (
-                    exits.map((exit, exitIndex) => (
-                        <Path key={`${roomIndex}-${exitIndex}`} start={room.position} end={exit.position} />
-                    ))
-                ))}
-            </div>
-        </div>
-    );
-};
+      // Draw walls
+      ctx.fillRect(x, y, width, wallThickness);               // Top wall
+      ctx.fillRect(x, y, wallThickness, height);              // Left wall
+      ctx.fillRect(x + width - wallThickness, y, wallThickness, height); // Right wall
+      ctx.fillRect(x, y + height - wallThickness, width, wallThickness); // Bottom wall
 
-const Room = ({ position, label }) => {
-    return (
-        <div className="room" style={{ top: position.top, left: position.left }}>
-            {label}
-        </div>
-    );
-};
+      // Draw label in the center
+      ctx.font = roomLabelFont;
+      ctx.fillStyle = '#2c3e50';
+      ctx.textAlign = 'center';
+      ctx.textBaseline = 'middle';
+      ctx.fillText(label, x + width / 2, y + height / 2);
 
-const Exit = ({ className, label, position }) => {
-    return (
-        <div className={`exit ${className}`} style={{ top: position.top, left: position.left }}>
-            {label}
-        </div>
-    );
-};
+      // Clear door area at the bottom
+      ctx.clearRect(x + (width - doorWidth) / 2, y + height - wallThickness, doorWidth, wallThickness);
+    }
 
-const Path = ({ start, end }) => {
-    const startX = parseFloat(start.left);
-    const startY = parseFloat(start.top);
-    const endX = parseFloat(end.left);
-    const endY = parseFloat(end.top);
+    function drawHallway(x, y, width, height) {
+      ctx.fillStyle = '#ecf0f1';
+      ctx.fillRect(x, y, width, height);
+    }
 
-    const width = Math.abs(endX - startX);
-    const height = Math.abs(endY - startY);
+    function drawGrid() {
+      ctx.strokeStyle = '#dfe6e9';
+      ctx.lineWidth = 0.5;
+      for (let i = 0; i < canvas.width; i += 40) {
+        ctx.beginPath();
+        ctx.moveTo(i, 0);
+        ctx.lineTo(i, canvas.height);
+        ctx.stroke();
+      }
+      for (let i = 0; i < canvas.height; i += 40) {
+        ctx.beginPath();
+        ctx.moveTo(0, i);
+        ctx.lineTo(canvas.width, i);
+        ctx.stroke();
+      }
+    }
 
-    return (
-        <div
-            className="path"
-            style={{
-                top: `${(startY + endY) / 2}%`,
-                left: `${(startX + endX) / 2}%`,
-                width: `${width}%`,
-                height: `${height}%`,
-                border: '1px dotted black',
-                position: 'absolute',
-                transform: `translate(-50%, -50%)`,
-            }}
-        />
-    );
-};
+    // Draw the layout with refined room sizes and positions
+    drawRoom(450, 80, 250, 160, 'Conference Hall', '#3b5998');
+    drawRoom(100, 300, 250, 160, 'Cabin 1', '#8e44ad');
+    drawRoom(450, 300, 250, 160, 'Cabin 2', '#e67e22');
+    drawRoom(100, 80, 250, 160, 'Refreshment Area', '#1abc9c');
+
+    // Exit doors repositioned outside adjacent corners
+    ctx.fillStyle = '#c0392b';
+    ctx.fillRect(95, 470, 50, 25);   // Exit for Cabin 1 (bottom-left)
+    ctx.fillRect(625, 60, 50, 25);   // Exit for Conference Hall (top-right)
+
+    // Labels for exit doors
+    ctx.fillStyle = '#ffffff';
+    ctx.font = 'bold 12px Arial';
+    ctx.fillText('Exit', 125, 482);  // Label for Cabin 1 exit
+    ctx.fillText('Exit', 650, 72);   // Label for Conference Hall exit
+
+    // Draw the grid for a structured look
+    drawGrid();
+  }, []);
+
+  return (
+    <div className="building-container">
+      <canvas ref={canvasRef} id="houseCanvas" width="800" height="500"></canvas>
+    </div>
+  );
+}
 
 export default Building;
