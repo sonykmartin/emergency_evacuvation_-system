@@ -79,7 +79,7 @@ const Login = () => {
   return (
     <div className="login-container">
       <form className="login-form" onSubmit={handleLogin}>
-        <img src={logo} alt="Mess Logo" className="logo" />
+        <img src={logo} alt="Emergency Logo" className="logo" />
         <h3>Welcome to Emergency Evacuvation System</h3>
         <div className="password-container">
           <input
