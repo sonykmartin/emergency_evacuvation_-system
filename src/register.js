@@ -6,6 +6,7 @@ import { createUserWithEmailAndPassword } from "firebase/auth";
 import { setDoc, doc } from "firebase/firestore";
 import { db, auth } from "./firebase_config";
 import { uploadDP } from "./authFunctions";
+
 import {
   getStorage,
   ref,
@@ -14,9 +15,8 @@ import {
 } from "firebase/storage";
 import { useNavigate } from "react-router-dom";
 
-
 const RegisterPage = () => {
-  const navigate = useNavigate(); // Initialize useNavigate
+  const navigate = useNavigate(); 
   const {
     register,
     handleSubmit,
@@ -27,22 +27,40 @@ const RegisterPage = () => {
   const [selectedDp, setSelectedDp] = useState(null);
   const [newEmail, setNewEmail] = useState("");
   const [isPasswordVisible, setIsPasswordVisible] = useState(false);
-  const [isReEnterPasswordVisible, setIsReEnterPasswordVisible] =
-    useState(false);
+  const [isReEnterPasswordVisible, setIsReEnterPasswordVisible] = useState(false);
   const storage = getStorage();
   
-  // New loading state
   const [isLoading, setIsLoading] = useState(false);
+  
+  const [dateOfBirth, setDateOfBirth] = useState("");
+  const [age, setAge] = useState("");
 
   useEffect(() => {
     const userInfo = {
       email: newEmail,
       employID: getValues("employID"),
-     
       name: getValues("name")
     };
-  
   }, [newEmail, getValues("employID"), getValues("name")]);
+
+
+  const calculateAge = (dob) => {
+    const birthDate = new Date(dob);
+    const today = new Date();
+    let calculatedAge = today.getFullYear() - birthDate.getFullYear();
+    const monthDifference = today.getMonth() - birthDate.getMonth();
+    if (monthDifference < 0 || (monthDifference === 0 && today.getDate() < birthDate.getDate())) {
+      calculatedAge--;
+    }
+    return calculatedAge;
+  };
+
+  const handleDobChange = (event) => {
+    const dob = event.target.value;
+    setDateOfBirth(dob);
+    const calculatedAge = calculateAge(dob);
+    setAge(calculatedAge);
+  };
 
   const showToast = (message, type) => {
     type === "success" ? toast.success(message) : toast.error(message);
@@ -60,7 +78,6 @@ const RegisterPage = () => {
       return;
     }
 
-    // Set loading state to true
     setIsLoading(true);
 
     try {
@@ -68,7 +85,6 @@ const RegisterPage = () => {
       const user = userCredential.user;
 
       const dpUrl = await uploadDP(data.name, selectedDp);
-
     
       await setDoc(doc(db, 'users', user.uid), {
         uid: user.uid,
@@ -76,28 +92,25 @@ const RegisterPage = () => {
         email: data.email,
         phone: data.mobNo,
         department: data.department,
-      employID: data.employID,
-       
+        employID: data.employID,
         dpUrl: dpUrl,
-      
-        isAdmin: false
+        isAdmin: false,
+        dateOfBirth: dateOfBirth, 
+        age: age, 
       });
-
-      //showToast(Registration Successful! Name: ${data.name}, Mess No: ${data.messNo}, Department: ${data.department}, Role: ${selectedRole}, 'success');
 
       reset();
 
-      // Navigate to the profile page
-      navigate('/profile');
+      
+      navigate('/building');
 
     } catch (error) {
       console.error('Error during registration:', error);
       const errorMessage = error.code === 'auth/email-already-in-use'
         ? 'Email is already in use.'
         : error.message || 'An unknown error occurred';
-      //showToast(Registration Failed: ${errorMessage}, 'error');
     } finally {
-      // Set loading state to false
+
       setIsLoading(false);
     }
   };
@@ -207,7 +220,7 @@ const RegisterPage = () => {
             className="toggle-password"
             onClick={() => setIsPasswordVisible(!isPasswordVisible)}
           >
-            
+            {/* Add icon or text for visibility toggle */}
           </button>
           {errors.password && (
             <span className="error">{errors.password.message}</span>
@@ -229,7 +242,7 @@ const RegisterPage = () => {
             className="toggle-password"
             onClick={() => setIsReEnterPasswordVisible(!isReEnterPasswordVisible)}
           >
-           
+            {/* Add icon or text for visibility toggle */}
           </button>
           {errors.rePassword && (
             <span className="error">{errors.rePassword.message}</span>
@@ -268,25 +281,26 @@ const RegisterPage = () => {
         />
         {errors.mobNo && <span className="error">{errors.mobNo.message}</span>}
 
+        {/* Date of Birth Field */}
         <input
-          {...register("employID", {
-            required: "Please enter your mess no",
-          })}
-          type="text"
-          placeholder="Employee ID"
+          type="date"
+          value={dateOfBirth}
+          onChange={handleDobChange}
           className="input-field"
+          required
         />
-        {errors.employID && (
-          <span className="error">{errors.employID.message}</span>
-        )}
+         <input
+          type="number"
+          value={age}
+          readOnly
+          className="input-field"
+          placeholder="Your Age"
+        />
 
-       
         <button type="submit" className="submit-button">
           Register
         </button>
       </form>
-
-     
     </div>
   );
 };
