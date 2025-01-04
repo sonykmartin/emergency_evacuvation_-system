@@ -1,54 +1,34 @@
-// Building.js
 import React, { useEffect, useRef } from 'react';
-import './Building.css';
 
-function Building() {
+const FloorPlan = () => {
   const canvasRef = useRef(null);
 
   useEffect(() => {
     const canvas = canvasRef.current;
     const ctx = canvas.getContext('2d');
 
-    const wallThickness = 10;
-    const roomLabelFont = 'bold 14px Arial';
-    const doorWidth = 40;
+    // Constants for architectural elements
+    const WALL_THICKNESS = 8;
+    const DOOR_WIDTH = 32;
+    const DOOR_SWING = 30;
+    const GRID_SIZE = 20;
 
-    function drawRoom(x, y, width, height, label, color = '#34495e') {
-      // Set wall color
-      ctx.fillStyle = color;
-
-      // Draw walls
-      ctx.fillRect(x, y, width, wallThickness);               // Top wall
-      ctx.fillRect(x, y, wallThickness, height);              // Left wall
-      ctx.fillRect(x + width - wallThickness, y, wallThickness, height); // Right wall
-      ctx.fillRect(x, y + height - wallThickness, width, wallThickness); // Bottom wall
-
-      // Draw label in the center
-      ctx.font = roomLabelFont;
-      ctx.fillStyle = '#2c3e50';
-      ctx.textAlign = 'center';
-      ctx.textBaseline = 'middle';
-      ctx.fillText(label, x + width / 2, y + height / 2);
-
-      // Clear door area at the bottom
-      ctx.clearRect(x + (width - doorWidth) / 2, y + height - wallThickness, doorWidth, wallThickness);
-    }
-
-    function drawHallway(x, y, width, height) {
-      ctx.fillStyle = '#ecf0f1';
-      ctx.fillRect(x, y, width, height);
-    }
+    // Clear canvas
+    ctx.fillStyle = '#ffffff';
+    ctx.fillRect(0, 0, canvas.width, canvas.height);
 
     function drawGrid() {
-      ctx.strokeStyle = '#dfe6e9';
+      ctx.strokeStyle = '#f0f0f0';
       ctx.lineWidth = 0.5;
-      for (let i = 0; i < canvas.width; i += 40) {
+
+      // Draw grid
+      for (let i = 0; i < canvas.width; i += GRID_SIZE) {
         ctx.beginPath();
         ctx.moveTo(i, 0);
         ctx.lineTo(i, canvas.height);
         ctx.stroke();
       }
-      for (let i = 0; i < canvas.height; i += 40) {
+      for (let i = 0; i < canvas.height; i += GRID_SIZE) {
         ctx.beginPath();
         ctx.moveTo(0, i);
         ctx.lineTo(canvas.width, i);
@@ -56,32 +36,127 @@ function Building() {
       }
     }
 
-    // Draw the layout with refined room sizes and positions
-    drawRoom(450, 80, 250, 160, 'Conference Hall', '#3b5998');
-    drawRoom(100, 300, 250, 160, 'Cabin 1', '#8e44ad');
-    drawRoom(450, 300, 250, 160, 'Cabin 2', '#e67e22');
-    drawRoom(100, 80, 250, 160, 'Refreshment Area', '#1abc9c');
+    function drawWalls(x, y, width, height) {
+      ctx.fillStyle = '#2c3e50';
+      ctx.fillRect(x, y, width, WALL_THICKNESS);                          // Top
+      ctx.fillRect(x, y, WALL_THICKNESS, height);                        // Left
+      ctx.fillRect(x + width - WALL_THICKNESS, y, WALL_THICKNESS, height); // Right
+      ctx.fillRect(x, y + height - WALL_THICKNESS, width, WALL_THICKNESS); // Bottom
+    }
 
-    // Exit doors repositioned outside adjacent corners
-    ctx.fillStyle = '#c0392b';
-    ctx.fillRect(95, 470, 50, 25);   // Exit for Cabin 1 (bottom-left)
-    ctx.fillRect(625, 60, 50, 25);   // Exit for Conference Hall (top-right)
+    function drawDoor(x, y, isHorizontal = true, swingLeft = true) {
+      ctx.strokeStyle = '#2c3e50';
+      ctx.lineWidth = 2;
 
-    // Labels for exit doors
-    ctx.fillStyle = '#ffffff';
-    ctx.font = 'bold 12px Arial';
-    ctx.fillText('Exit', 125, 482);  // Label for Cabin 1 exit
-    ctx.fillText('Exit', 650, 72);   // Label for Conference Hall exit
+      if (isHorizontal) {
+        ctx.clearRect(x, y - WALL_THICKNESS / 2, DOOR_WIDTH, WALL_THICKNESS);
 
-    // Draw the grid for a structured look
+        ctx.beginPath();
+        if (swingLeft) {
+          ctx.arc(x, y, DOOR_SWING, 0, Math.PI / 2);
+        } else {
+          ctx.arc(x + DOOR_WIDTH, y, DOOR_SWING, Math.PI / 2, Math.PI);
+        }
+        ctx.stroke();
+      } else {
+        ctx.clearRect(x - WALL_THICKNESS / 2, y, WALL_THICKNESS, DOOR_WIDTH);
+
+        ctx.beginPath();
+        if (swingLeft) {
+          ctx.arc(x, y, DOOR_SWING, 0, -Math.PI / 2);
+        } else {
+          ctx.arc(x, y + DOOR_WIDTH, DOOR_SWING, -Math.PI / 2, -Math.PI);
+        }
+        ctx.stroke();
+      }
+    }
+
+    function drawRoomLabel(x, y, width, height, label) {
+      ctx.font = '16px Arial';
+      ctx.fillStyle = '#34495e';
+      ctx.textAlign = 'center';
+      ctx.textBaseline = 'middle';
+
+      ctx.fillText(label, x + width / 2, y + height / 2);
+
+      ctx.font = '12px Arial';
+      ctx.fillStyle = '#7f8c8d';
+      ctx.fillText(
+        `${Math.round(width / GRID_SIZE)}' × ${Math.round(height / GRID_SIZE)}'`,
+        x + width / 2,
+        y + height / 2 + 20
+      );
+    }
+
+    function drawExitSign(x, y) {
+      // Highlight area around exit
+      ctx.fillStyle = 'rgba(231, 76, 60, 0.2)';
+      ctx.fillRect(x - 20, y - 20, 40, 40);
+
+      ctx.strokeStyle = '#e74c3c';
+      ctx.lineWidth = 2;
+      ctx.strokeRect(x - 20, y - 20, 40, 40);
+
+      // Draw exit text
+      ctx.font = '14px Arial';
+      ctx.fillStyle = '#e74c3c';
+      ctx.textAlign = 'center';
+      ctx.fillText('EXIT', x, y);
+    }
+
+    // Draw the layout
     drawGrid();
+
+    // Conference Hall
+    drawWalls(600, 100, 300, 200);
+    drawDoor(750, 300, true, false);
+    drawRoomLabel(600, 100, 300, 200, 'Conference Hall');
+
+    // Refreshment Area
+    drawWalls(150, 100, 300, 200);
+    drawDoor(300, 300, true, true);
+    drawRoomLabel(150, 100, 300, 200, 'Refreshment Area');
+
+    // Cabin 1
+    drawWalls(150, 400, 300, 200);
+    drawDoor(300, 400, true, false);
+    drawRoomLabel(150, 400, 300, 200, 'Cabin 1');
+
+    // Cabin 2
+    drawWalls(600, 400, 300, 200);
+    drawDoor(750, 400, true, true);
+    drawRoomLabel(600, 400, 300, 200, 'Cabin 2');
+
+    // Highlighted Exit signs
+    drawExitSign(200, 650); // Lower exit remains the same
+    drawExitSign(850, 80);  // Adjusted upper exit (moved to the right and away from the hall)
+
+    // Scale indicator
+    ctx.strokeStyle = '#2c3e50';
+    ctx.lineWidth = 2;
+    ctx.beginPath();
+    ctx.moveTo(50, 50);
+    ctx.lineTo(150, 50);
+    ctx.stroke();
+
+    ctx.font = '12px Arial';
+    ctx.fillStyle = '#2c3e50';
+    ctx.textAlign = 'center';
+    ctx.fillText('0', 50, 45);
+    ctx.fillText('5\'', 100, 45);
+    ctx.fillText('10\'', 150, 45);
   }, []);
 
   return (
-    <div className="building-container">
-      <canvas ref={canvasRef} id="houseCanvas" width="800" height="500"></canvas>
+    <div className="relative w-full h-full p-4 bg-white rounded-lg shadow-md">
+      <canvas
+        ref={canvasRef}
+        width={1000}
+        height={800}
+        className="w-full h-full"
+      />
     </div>
   );
-}
+};
 
-export default Building;
+export default FloorPlan;
