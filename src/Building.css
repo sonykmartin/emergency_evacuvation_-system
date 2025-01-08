@@ -1,13 +1,42 @@
 /* Building.css */
+
 .building-container {
-    display: flex;
-    justify-content: center;
-    margin-top: 20px;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  margin-top: 20px;
+  padding: 20px;
+  background: linear-gradient(to bottom, #e3f2fd, #bbdefb); /* Light gradient background */
+  border-radius: 10px;
+  box-shadow: 0 4px 15px rgba(0, 0, 0, 0.2);
+}
+
+#houseCanvas {
+  background-color: #ffffff; /* White background for a clean canvas */
+  border: 3px solid #34495e; /* Darker border for better contrast */
+  box-shadow: 0 6px 12px rgba(0, 0, 0, 0.2); /* Subtle shadow for depth */
+  border-radius: 8px; /* Rounded edges for a modern look */
+  width: 400px; /* Set a default width */
+  height: 300px; /* Set a default height */
+  transition: transform 0.3s, box-shadow 0.3s; /* Smooth transitions */
+}
+
+/* Add hover effect for interactivity */
+#houseCanvas:hover {
+  transform: scale(1.05); /* Slight zoom-in effect */
+  box-shadow: 0 10px 20px rgba(0, 0, 0, 0.3); /* Enhanced shadow on hover */
+}
+
+/* Optional: Add responsiveness */
+@media (max-width: 768px) {
+  .building-container {
+    flex-direction: column;
+    margin-top: 10px;
+    padding: 10px;
   }
-  
+
   #houseCanvas {
-    background-color: #ffffff;
-    border: 2px solid #2c3e50;
-    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
-  }
+    width: 300px;
   
+  }
+}
