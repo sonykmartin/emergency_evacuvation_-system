@@ -1,4 +1,5 @@
 import React, { useEffect, useRef, useState } from 'react';
+import "./Building.css";
 
 const ITFloorPlan = () => {
   const canvasRef = useRef(null);
@@ -7,6 +8,7 @@ const ITFloorPlan = () => {
   const [disease, setDisease] = useState('');
   const [showPath, setShowPath] = useState(false);
   const [dimensions, setDimensions] = useState({ width: 0, height: 0 });
+  
 
   useEffect(() => {
     const updateDimensions = () => {
@@ -120,7 +122,7 @@ const ITFloorPlan = () => {
       ctx.textAlign = 'center';
       ctx.fillText('EXIT', x * scale, y * scale);
     }
-    
+
     function getPathPoints(room) {
       // Define corridor intersection points
       const corridorPoints = {
@@ -151,7 +153,6 @@ const ITFloorPlan = () => {
       const { doorPoint, corridorPoints } = getPathPoints(room);
       const isShorterPath = (ageGroup === 'elder' || disease === 'chronic');
 
-      // Calculate nearest exit
       const exits = [
         { point: corridorPoints.leftExit, label: 'left' },
         { point: corridorPoints.rightExit, label: 'right' },
@@ -160,7 +161,7 @@ const ITFloorPlan = () => {
 
       const nearestExit = exits.reduce((nearest, exit) => {
         const distance = Math.sqrt(
-          Math.pow(doorPoint.x - exit.point.x, 2) + 
+          Math.pow(doorPoint.x - exit.point.x, 1) + 
           Math.pow(doorPoint.y - exit.point.y, 2)
         );
         return (!nearest || (isShorterPath ? distance < nearest.distance : distance > nearest.distance))
@@ -168,18 +169,26 @@ const ITFloorPlan = () => {
           : nearest;
       }, null);
 
-      // Draw path
-      ctx.strokeStyle = '#22c55e';
-      ctx.lineWidth = 3;
-      ctx.setLineDash([5, 5]);
+      // Create gradient for path
+      const gradient = ctx.createLinearGradient(
+        doorPoint.x * scale, 
+        doorPoint.y * scale,
+        nearestExit.point.x * scale,
+        nearestExit.point.y * scale
+      );
+      gradient.addColorStop(0, '#4f46e5');  
+      gradient.addColorStop(1, '#06b6d4');  
+
+      ctx.shadowColor = '#06b6d4';
+      ctx.shadowBlur = 10;
+      ctx.strokeStyle = gradient;
+      ctx.lineWidth = 4;
+      ctx.setLineDash([8, 4]);
 
       ctx.beginPath();
       ctx.moveTo(doorPoint.x * scale, doorPoint.y * scale);
-
-      // First go to corridor
       ctx.lineTo(doorPoint.x * scale, corridorPoints.mainIntersection.y * scale);
 
-      // Then to the nearest exit
       if (nearestExit.label === 'bottom') {
         ctx.lineTo(corridorPoints.mainIntersection.x * scale, corridorPoints.mainIntersection.y * scale);
         ctx.lineTo(corridorPoints.bottomExit.x * scale, corridorPoints.bottomExit.y * scale);
@@ -191,26 +200,30 @@ const ITFloorPlan = () => {
 
       ctx.stroke();
       ctx.setLineDash([]);
+      ctx.shadowBlur = 0;
 
-      // Draw arrow
-      const arrowSize = 10 * scale;
+      const arrowSize = 12 * scale;
       const points = [doorPoint, corridorPoints.mainIntersection, nearestExit.point];
       const midPoint = points[Math.floor(points.length / 2)];
       const nextPoint = points[Math.floor(points.length / 2) + 1];
       
       const angle = Math.atan2(nextPoint.y - midPoint.y, nextPoint.x - midPoint.x);
+      ctx.fillStyle = '#06b6d4';
+      ctx.strokeStyle = '#06b6d4';
+      ctx.lineWidth = 3;
+      
       ctx.beginPath();
       ctx.moveTo(midPoint.x * scale, midPoint.y * scale);
       ctx.lineTo(
         (midPoint.x - arrowSize * Math.cos(angle - Math.PI / 6)) * scale,
         (midPoint.y - arrowSize * Math.sin(angle - Math.PI / 6)) * scale
       );
-      ctx.moveTo(midPoint.x * scale, midPoint.y * scale);
       ctx.lineTo(
         (midPoint.x - arrowSize * Math.cos(angle + Math.PI / 6)) * scale,
         (midPoint.y - arrowSize * Math.sin(angle + Math.PI / 6)) * scale
       );
-      ctx.stroke();
+      ctx.closePath();
+      ctx.fill();
     }
 
     const rooms = [
@@ -246,7 +259,7 @@ const ITFloorPlan = () => {
 
       drawExitSign(50, 175);    // Left exit
       drawExitSign(750, 175);   // Right exit
-      drawExitSign(375, 400);   // Bottom exit
+      drawExitSign(375, 375);   // Bottom exit
 
       if (showPath && selectedRoom && ageGroup) {
         drawEvacuationPath(selectedRoom);
@@ -322,7 +335,7 @@ const ITFloorPlan = () => {
             Show Evacuation Path
           </button>
         </div>
-  
+
         <div id="floor-plan-container" className="w-full aspect-[2/1] relative bg-gray-50 rounded-lg overflow-hidden">
           <canvas
             ref={canvasRef}
@@ -331,14 +344,9 @@ const ITFloorPlan = () => {
             className="w-full h-full cursor-pointer"
           />
         </div>
-  
-        <div className="mt-4 text-sm text-gray-500 text-center">
-          Click on a room to select it, then choose an age group and disease condition to see the optimal evacuation path
-        </div>
+
       </div>
     );
   };
   
   export default ITFloorPlan;
-
-  

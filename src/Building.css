@@ -40,3 +40,83 @@
   
   }
 }
+/* General container styling */
+.w-full.max-w-3xl.mx-auto {
+  background-color: #ffffff;
+  border-radius: 1rem;
+  box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+  padding: 1.5rem;
+  overflow: hidden;
+}
+
+/* Form and button styling */
+.flex.flex-col.sm\\:flex-row {
+  gap: 1rem;
+  align-items: center;
+  margin-bottom: 1rem;
+}
+
+select {
+  width: 100%;
+  max-width: 12rem;
+  padding: 0.75rem;
+  border: 1px solid #d1d5db;
+  border-radius: 0.5rem;
+  background-color: #ffffff;
+  box-shadow: 0 1px 3px rgba(0, 0, 0, 0.05);
+  transition: border-color 0.2s ease, box-shadow 0.2s ease;
+}
+
+select:focus {
+  outline: none;
+  border-color: #3b82f6;
+  box-shadow: 0 0 0 3px rgba(59, 130, 246, 0.3);
+}
+
+button {
+  padding: 0.5rem 1rem;
+  color: #ffffff;
+  background-color: #3b82f6;
+  border: none;
+  border-radius: 0.5rem;
+  cursor: pointer;
+  font-weight: 500;
+  transition: background-color 0.3s ease, box-shadow 0.2s ease;
+}
+
+button:hover {
+  background-color: #2563eb;
+}
+
+button:focus {
+  outline: none;
+  box-shadow: 0 0 0 3px rgba(59, 130, 246, 0.3);
+}
+
+/* Room selection text */
+.text-sm.text-gray-600 {
+  color: #6b7280;
+  font-size: 0.875rem;
+}
+
+/* Floor plan container */
+#floor-plan-container {
+  position: relative;
+  background-color: #f8fafc;
+  border-radius: 0.5rem;
+  overflow: hidden;
+}
+
+canvas {
+  cursor: pointer;
+  border-radius: 0.5rem;
+  background: white;
+}
+
+/* Additional tips section */
+.text-sm.text-gray-500 {
+  color: #9ca3af;
+  font-size: 0.875rem;
+  text-align: center;
+  margin-top: 1rem;
+}
