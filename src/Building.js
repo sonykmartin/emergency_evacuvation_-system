@@ -298,9 +298,9 @@ const ITFloorPlan = () => {
           className="w-full sm:w-48 px-3 py-2 border rounded-lg bg-white shadow-sm focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500"
         >
           <option value="">Select Age Group</option>
-          <option value="child">Child (Below 15)</option>
-          <option value="youth">Youth (15-30)</option>
-          <option value="elder">Elder (Above 60)</option>
+          <option value="youth">20-30</option>
+          <option value="middle aged">30-50</option>
+          <option value="elder">Above 50</option>
         </select>
         
         <select
@@ -311,7 +311,9 @@ const ITFloorPlan = () => {
           <option value="">Select Disease Condition</option>
           <option value="none">None</option>
           <option value="chronic">Chronic Disease</option>
-          <option value="temporary">Temporary Injury</option>
+          <option value="temporary">Temporary Injury</option>       
+          <option value="respiratory disease">Respiratory disease</option>
+          <option value="cardic diseases">Cardic diseases</option>
         </select>
 
         <div className="text-sm text-gray-600">
